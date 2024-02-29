@@ -6,9 +6,17 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+dotenv = "0.15.0"
 html5ever = "0.26.0"
+log = "0.4.21"
 markup5ever = "0.11.0"
 regex = "1.10.3"
-serde = "1.0.197"
+serde = { version = "1.0.197", features=["derive"] }
 serde_json = "1.0.114"
 soup = "0.5.1"
+thirtyfour = "0.31.0"
+tokio = "1.36.0"
+webdriver-downloader = "0.14.3"
+
+[lib]
+path = "src/mod.rs"

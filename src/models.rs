@@ -1,4 +1,4 @@
-use serde::prelude::*;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, Serialize)]
 struct FounderData {
@@ -72,6 +72,7 @@ pub fn test_model() {
         }
     "#;
 
-    let scraped_data: ScrapedData = serde::from_str(json_str).unwrap();
+    let scraped_data: ScrapedData =
+        serde_json::from_str(json_str).expect("Failed to deserialize JSON");
     println!("{:?}", scraped_data);
 }

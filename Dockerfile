@@ -1,13 +1,17 @@
 FROM ubuntu:latest
 
-WORKDIR /deez
+WORKDIR /app
 
-# Basic system-level dependencies
-RUN apt-get update && apt install -y make git curl && \
-    # TODO: these are examplary, change to those you need:
-    apt install -y software-properties-common build-essential && \
-    add-apt-repository --yes ppa:neovim-ppa/unstable && \
-    apt-get install -y neovim
+RUN apt-get update && \
+    apt-get install -y \
+    wget \
+    unzip \
+    dpkg
+
+RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
+    && echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list
+RUN apt-get update && apt-get -y install google-chrome-stable
+
 
 # TODO: Add extra dependencies, if needed
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y

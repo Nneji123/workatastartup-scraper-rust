@@ -1,7 +1,6 @@
 use regex::Regex;
 
 use soup::prelude::*;
-use std::borrow::Cow;
 
 // Define a custom error type for invalid URLs
 #[derive(Debug)]
@@ -42,7 +41,6 @@ pub fn validate_company_url(input_url: &str) -> Result<(), InvalidURLException> 
     // If the URL matches the pattern, return Ok
     Ok(())
 }
-
 
 /// Function to strip HTML tags from the input HTML content
 pub fn strip_html_tags(html_content: &str) -> String {
