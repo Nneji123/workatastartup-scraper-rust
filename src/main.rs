@@ -38,7 +38,22 @@
 //     }
 // }
 
+mod config;
 mod scraper;
-fn main(){
-    scraper::Scraper.
+mod selectors;
+use log::info;
+
+#[tokio::main]
+async fn main() {
+    // Create a new instance of Scraper
+    let mut scraper: scraper::Scraper = scraper::Scraper::new();
+    let dets: config::config::Config = config::config::Config::from_env();
+    let username: String = dets.login_username;
+    let password: String = dets.login_password;
+    // Perform login
+    if let Ok(_) = scraper.login(&username, &password).await {
+        info!("Login successful");
+    } else {
+        info!("Login failed");
+    }
 }

@@ -1,7 +1,7 @@
-/// Selectors and Class names for Ycombinator-Scraper Tool"""
+#![allow(dead_code)]
 
+/// Selectors and Class names for Ycombinator-Scraper Tool"""
 // CLASS NAMES FOR LOGIN
-pub mod selectors {
 pub const LOGIN_BUTTON_XPATH: &str = "/html/body/header/nav/div[3]/div[2]/a";
 pub const USERNAME_INPUT_XPATH: &str = r"//*[@id='ycid-input']";
 pub const PASSWORD_INPUT_XPATH: &str = "//*[@id='password-input']";
@@ -32,5 +32,4 @@ pub const JOB_DESCRIPTION_CLASS: &str = "prose";
 
 pub fn print_variable() {
     println!("{USERNAME_INPUT_XPATH}");
-}
 }

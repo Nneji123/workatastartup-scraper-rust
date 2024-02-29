@@ -18,5 +18,5 @@ thirtyfour = "0.31.0"
 tokio = "1.36.0"
 webdriver-downloader = "0.14.3"
 
-[lib]
-path = "src/mod.rs"
+# [lib]
+# path = "src/mod.rs"
