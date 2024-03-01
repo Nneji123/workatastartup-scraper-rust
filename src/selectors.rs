@@ -29,7 +29,3 @@ pub const JOB_TITLE_CLASS: &str = r"company-name.text-2xl.font-bold";
 pub const JOB_TAGS_CLASS: &str = r"company-details.my-2.flex.flex-wrap.md\:my-0";
 pub const SALARY_RANGE_CLASS: &str = "text-gray-500.my-2";
 pub const JOB_DESCRIPTION_CLASS: &str = "prose";
-
-pub fn print_variable() {
-    println!("{USERNAME_INPUT_XPATH}");
-}

@@ -1,4 +1,5 @@
 // Define a struct to hold your configuration
+#![allow(dead_code)]
 
 pub mod config {
     use dotenv::dotenv;
