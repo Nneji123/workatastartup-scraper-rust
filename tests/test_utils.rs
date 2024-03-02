@@ -1,6 +1,8 @@
 #[cfg(test)]
 mod tests {
-    use ycombinator_scraper_rust::utils::{validate_company_url, validate_job_url, strip_html_tags};
+    use ycombinator_scraper_rust::utils::{
+        strip_html_tags, validate_company_url, validate_job_url,
+    };
 
     #[test]
     fn test_valid_job_url() {
@@ -37,14 +39,9 @@ mod tests {
 
     #[test]
     fn test_strip_html_tags() {
-        // Test input with HTML tags
         let html_content: &str = "<p>This is <b>bold</b> text.</p>";
         let expected_output: &str = "This is bold text.";
-
-        // Call the strip_html_tags function with the test input
         let stripped_text: String = strip_html_tags(html_content);
-
-        // Assert that the output matches the expected output
         assert_eq!(stripped_text, expected_output);
     }
 }
