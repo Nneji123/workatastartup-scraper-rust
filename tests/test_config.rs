@@ -1,4 +1,5 @@
-use super::*;
+mod test_config{
+    use ycombinator_scraper_rust::config::Config;
 
 #[test]
 fn test_from_env() {
@@ -12,4 +13,5 @@ fn test_from_env() {
     // Verify that the retrieved config matches the expected values
     assert_eq!(config.login_username, "test_username");
     assert_eq!(config.login_password, "test_password");
+}
 }
