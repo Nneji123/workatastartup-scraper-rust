@@ -1,37 +1,34 @@
 #![allow(dead_code)]
 
 use regex::Regex;
-
 use soup::prelude::*;
-
-// Define a custom error type for invalid URLs
-#[derive(Debug)]
-pub struct InvalidURLException(String);
-
-impl std::fmt::Display for InvalidURLException {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "Invalid URL: {}", self.0)
-    }
-}
+use thirtyfour::error::WebDriverError;
 
 /// Function to validate the job URL
-pub fn validate_job_url(input_url: &str) -> Result<(), InvalidURLException> {
+pub fn validate_job_url(input_url: &str) -> Result<(), WebDriverError> {
     let url_pattern = Regex::new(r"https://www.workatastartup.com/jobs").unwrap();
 
     if !url_pattern.is_match(input_url) {
-        return Err(InvalidURLException(input_url.to_string()));
+        return Err(WebDriverError::CustomError(format!(
+            "Invalid job URL: {}",
+            input_url
+        )));
     }
 
     Ok(())
 }
 
 /// Function to validate company url
-pub fn validate_company_url(input_url: &str) -> Result<(), InvalidURLException> {
+pub fn validate_company_url(input_url: &str) -> Result<(), WebDriverError> {
     let url_pattern = Regex::new(r"https://www.workatastartup.com/companies").unwrap();
 
     if !url_pattern.is_match(input_url) {
-        return Err(InvalidURLException(input_url.to_string()));
+        return Err(WebDriverError::CustomError(format!(
+            "Invalid job URL: {}",
+            input_url
+        )));
     }
+
     Ok(())
 }
 

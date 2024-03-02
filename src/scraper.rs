@@ -1,7 +1,7 @@
 #![allow(dead_code)]
-use crate::models::FounderData;
+use crate::models::{FounderData, JobData};
 use crate::selectors;
-// use crate::utils::{strip_html_tags, validate_company_url};
+use crate::utils::{strip_html_tags, validate_company_url, validate_job_url};
 use log::info;
 // use std::process::Command;
 use std::thread;
@@ -9,11 +9,18 @@ use std::time::Duration;
 use thirtyfour::prelude::*;
 // use tokio::time;
 
-const MAX_WORKERS: i32 = 5;
+const DRIVER_WAIT_DURATION: u64 = 10;
+const MAX_WORKERS: u32 = 5;
 const SCROLL_PAUSE_TIME: f32 = 0.5;
 
 pub struct Scraper {
     pub driver: Option<WebDriver>,
+}
+
+impl Default for Scraper {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl Scraper {
@@ -78,53 +85,128 @@ impl Scraper {
     pub async fn scrape_founders_data(
         &mut self,
         company_url: &str,
-    ) -> WebDriverResult<(Vec<FounderData>, bool)> {
-        let mut founders_list: Vec<FounderData> = Vec::new();
+    ) -> Result<(Vec<FounderData>, bool), WebDriverError> {
+        // Validate the company URL
+        match validate_company_url(company_url) {
+            Ok(()) => {
+                // Proceed with scraping
+                println!("Scraping company founders from: {}", company_url);
 
-        if self.driver.is_none() {
-            self.driver = Some(self.initialize_driver().await?);
+                let mut founders_list: Vec<FounderData> = Vec::new();
+
+                if self.driver.is_none() {
+                    self.driver = Some(self.initialize_driver().await?);
+                }
+
+                let driver: &WebDriver = self.driver.as_ref().unwrap();
+                driver.goto(company_url).await?;
+
+                thread::sleep(Duration::from_secs(DRIVER_WAIT_DURATION));
+                let founders_names: Vec<WebElement> = driver
+                    .find_all(By::ClassName(selectors::FOUNDER_NAME_CLASS))
+                    .await?;
+                let founders_images: Vec<WebElement> = driver
+                    .find_all(By::ClassName(selectors::FOUNDER_IMAGE_CLASS))
+                    .await?;
+                let founders_descriptions: Vec<WebElement> = driver
+                    .find_all(By::ClassName(selectors::FOUNDER_DESCRIPTION_CLASS_ONE))
+                    .await
+                    .or(driver
+                        .find_all(By::ClassName(selectors::FOUNDER_DESCRIPTION_CLASS_TWO))
+                        .await)?;
+                let founders_linkedins: Vec<WebElement> = driver
+                    .find_all(By::ClassName(selectors::FOUNDER_LINKEDIN_CLASS))
+                    .await?;
+                for i in 0..founders_names.len() {
+                    let founder_name: String = founders_names[i].text().await?;
+                    let founder_image_url: Option<String> = founders_images[i].attr("src").await?;
+                    let founder_description: String = founders_descriptions[i].text().await?;
+                    let founder_linkedin_url: Option<String> =
+                        founders_linkedins[i].attr("href").await?;
+
+                    let founder_data: FounderData = FounderData {
+                        founder_name,
+                        founder_image_url,
+                        founder_description,
+                        founder_linkedin_url,
+                        founder_emails: None,
+                    };
+
+                    founders_list.push(founder_data);
+                }
+
+                info!(
+                    "Successfully scraped founder's details from: {}",
+                    company_url
+                );
+                driver.clone().quit().await?;
+                Ok((founders_list, true))
+            }
+            Err(e) => Err(e),
         }
+    }
 
-        let driver: &WebDriver = self.driver.as_ref().unwrap();
-        driver.goto(company_url).await?;
+    ///Function to scrape job details from WorkataStartup.com
+    pub async fn scrape_job_data(
+        &mut self,
+        job_url: &str,
+    ) -> Result<(JobData, bool), WebDriverError> {
+        // Validate the company URL
+        match validate_job_url(job_url) {
+            Ok(()) => {
+                // Proceed with scraping
+                println!("Scraping job details from: {}", job_url);
+                let mut job_data: JobData = JobData::new();
+                job_data.job_url = String::from(job_url);
 
-        thread::sleep(Duration::from_secs(5));
-        let founders_names: Vec<WebElement> = driver
-            .find_all(By::ClassName(selectors::FOUNDER_NAME_CLASS))
-            .await?;
-        let founders_images: Vec<WebElement> = driver
-            .find_all(By::ClassName(selectors::FOUNDER_IMAGE_CLASS))
-            .await?;
-        let founders_descriptions: Vec<WebElement> = driver
-            .find_all(By::ClassName(selectors::FOUNDER_DESCRIPTION_CLASS_ONE))
-            .await
-            .or(driver
-                .find_all(By::ClassName(selectors::FOUNDER_DESCRIPTION_CLASS_TWO))
-                .await)?;
-        let founders_linkedins: Vec<WebElement> = driver
-            .find_all(By::ClassName(selectors::FOUNDER_LINKEDIN_CLASS))
-            .await?;
-        for i in 0..founders_names.len() {
-            let founder_name: String = founders_names[i].text().await?;
-            let founder_image_url: Option<String> = founders_images[i].attr("src").await?;
-            let founder_description: String = founders_descriptions[i].text().await?;
-            let founder_linkedin_url: Option<String> = founders_linkedins[i].attr("href").await?;
+                if self.driver.is_none() {
+                    self.driver = Some(self.initialize_driver().await?);
+                }
 
-            let founder_data: FounderData = FounderData {
-                founder_name: founder_name,
-                founder_image_url: founder_image_url,
-                founder_description: founder_description,
-                founder_linkedin_url: founder_linkedin_url,
-                founder_emails: None,
-            };
+                let driver: &WebDriver = self.driver.as_ref().unwrap();
+                driver.goto(job_url).await?;
+                thread::sleep(Duration::from_secs(DRIVER_WAIT_DURATION));
+                let job_title_element: WebElement = driver
+                    .find(By::ClassName(selectors::JOB_TITLE_CLASS))
+                    .await?;
+                let job_title_text: String = job_title_element.text().await?;
 
-            founders_list.push(founder_data);
+                let job_description_element: WebElement = driver
+                    .find(By::ClassName(selectors::JOB_DESCRIPTION_CLASS))
+                    .await?;
+                let mut job_description_text: String = job_description_element.text().await?;
+                job_description_text = strip_html_tags(&job_description_text);
+
+                let job_tags_elements: Vec<WebElement> = driver
+                    .find_all(By::ClassName(selectors::JOB_TAGS_CLASS))
+                    .await?;
+
+                let mut job_tags: Vec<String> = Vec::new();
+                for tag in job_tags_elements {
+                    let new_tag = tag.text().await?;
+                    let split_tags: Vec<&str> = new_tag.split("\n").collect();
+                    for split_tag in split_tags {
+                        job_tags.push(split_tag.to_string());
+                    }
+                }
+                let salary_range_element: WebElement = driver
+                    .find(By::ClassName(selectors::SALARY_RANGE_CLASS))
+                    .await?;
+                let mut salary_range_text: String = salary_range_element.text().await?;
+
+                salary_range_text = String::from(salary_range_text.trim());
+                salary_range_text = salary_range_text.replace("•", "");
+                salary_range_text = String::from(salary_range_text.trim());
+
+                job_data.job_salary_range = salary_range_text;
+                job_data.job_title = job_title_text;
+                job_data.job_description = job_description_text;
+                job_data.job_tags = job_tags;
+                info!("Successfully scraped job details from: {}", job_url);
+                driver.clone().quit().await?;
+                Ok((job_data, true))
+            }
+            Err(e) => Err(e),
         }
-
-        info!(
-            "Successfully scraped founder's details from: {}",
-            company_url
-        );
-        Ok((founders_list, true))
     }
 }

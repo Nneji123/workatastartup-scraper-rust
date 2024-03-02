@@ -12,12 +12,30 @@ pub struct FounderData {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-struct JobData {
-    job_url: String,
-    job_title: String,
-    job_salary_range: String,
-    job_tags: Vec<String>,
-    job_description: String,
+pub struct JobData {
+    pub job_url: String,
+    pub job_title: String,
+    pub job_salary_range: String,
+    pub job_tags: Vec<String>,
+    pub job_description: String,
+}
+
+impl Default for JobData {
+fn default() -> Self {
+Self::new()
+}
+}
+
+impl JobData {
+    pub fn new() -> Self {
+        JobData {
+            job_url: String::new(),
+            job_title: String::new(),
+            job_salary_range: String::new(),
+            job_tags: Vec::new(),
+            job_description: String::new(),
+        }
+    }
 }
 
 #[derive(Debug, Deserialize, Serialize)]
