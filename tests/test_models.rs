@@ -1,12 +1,12 @@
-// Import necessary modules
-use serde_json;
+
 
 
 mod test_models {
         use ycombinator_scraper_rust::models::{
         FounderData, CompanyData,
     };
-
+// Import necessary modules
+use serde_json;
 
     // Define a test function to serialize and deserialize structs
     #[test]
