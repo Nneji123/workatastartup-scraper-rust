@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod tests {
+mod test_utils {
     use ycombinator_scraper_rust::utils::{
         strip_html_tags, validate_company_url, validate_job_url,
     };
