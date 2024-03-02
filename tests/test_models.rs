@@ -25,9 +25,10 @@ use serde_json;
         let deserialized_founder_data: FounderData = serde_json::from_str(&serialized_founder_data).unwrap();
 
         // Verify that serialization and deserialization worked correctly
-        assert_eq!(founder_data, deserialized_founder_data);
-
-        // Similar tests for JobData, CompanyData, and ScrapedData can be added here
-        // You can create sample data for each struct, serialize, and then deserialize to verify correctness
+        assert_eq!(founder_data.founder_name, deserialized_founder_data.founder_name);
+        assert_eq!(founder_data.founder_description, deserialized_founder_data.founder_description);
+        assert_eq!(founder_data.founder_image_url, deserialized_founder_data.founder_image_url);
+        assert_eq!(founder_data.founder_linkedin_url, deserialized_founder_data.founder_linkedin_url);
+        assert_eq!(founder_data.founder_emails, deserialized_founder_data.founder_emails);
     }
 }
