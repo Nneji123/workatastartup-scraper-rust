@@ -1,7 +1,6 @@
 mod test_models {
-        use ycombinator_scraper_rust::models::{
-        FounderData, CompanyData,
-    };
+        use ycombinator_scraper_rust::models::
+        FounderData;
 // Import necessary modules
 use serde_json;
 
