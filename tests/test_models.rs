@@ -1,6 +1,3 @@
-
-
-
 mod test_models {
         use ycombinator_scraper_rust::models::{
         FounderData, CompanyData,
