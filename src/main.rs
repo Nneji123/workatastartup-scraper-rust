@@ -6,12 +6,12 @@ mod scraper;
 mod selectors;
 mod utils;
 use log::info;
-
+#[allow(clippy::redundant_pattern_matching)]
 #[tokio::main]
 async fn main() {
     // Create a new instance of Scraper
     let mut scraper: scraper::Scraper = scraper::Scraper::new();
-    let dets: config::config::Config = config::config::Config::from_env();
+    let dets: config::Config = config::Config::from_env();
     let username: String = dets.login_username;
     let password: String = dets.login_password;
     // Perform login
@@ -21,7 +21,7 @@ async fn main() {
         info!("Login failed");
     }
     let company_url: &str = "https://workatastartup.com/companies/vocode";
-    if let Ok(founders) = scraper.scrape_founders_data(&company_url).await {
+    if let Ok(founders) = scraper.scrape_founders_data(company_url).await {
         info!("Scraping founders successful");
         println!("{:?}", founders);
     } else {
@@ -29,7 +29,7 @@ async fn main() {
     }
 
     let job_url: &str = "https://www.workatastartup.com/jobs/64333";
-    if let Ok(jobs) = scraper.scrape_job_data(&job_url).await {
+    if let Ok(jobs) = scraper.scrape_job_data(job_url).await {
         info!("Scraping jobs successful!");
         println!("{:?}", jobs);
     } else {

@@ -21,9 +21,9 @@ pub struct JobData {
 }
 
 impl Default for JobData {
-fn default() -> Self {
-Self::new()
-}
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl JobData {

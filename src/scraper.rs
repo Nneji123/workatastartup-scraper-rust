@@ -3,11 +3,9 @@ use crate::models::{FounderData, JobData};
 use crate::selectors;
 use crate::utils::{strip_html_tags, validate_company_url, validate_job_url};
 use log::info;
-// use std::process::Command;
 use std::thread;
 use std::time::Duration;
 use thirtyfour::prelude::*;
-// use tokio::time;
 
 const DRIVER_WAIT_DURATION: u64 = 10;
 const MAX_WORKERS: u32 = 5;
@@ -139,7 +137,7 @@ impl Scraper {
                     "Successfully scraped founder's details from: {}",
                     company_url
                 );
-                driver.clone().quit().await?;
+                // driver.clone().quit().await?;
                 Ok((founders_list, true))
             }
             Err(e) => Err(e),
@@ -184,7 +182,7 @@ impl Scraper {
                 let mut job_tags: Vec<String> = Vec::new();
                 for tag in job_tags_elements {
                     let new_tag = tag.text().await?;
-                    let split_tags: Vec<&str> = new_tag.split("\n").collect();
+                    let split_tags: Vec<&str> = new_tag.split('\n').collect();
                     for split_tag in split_tags {
                         job_tags.push(split_tag.to_string());
                     }
@@ -195,7 +193,7 @@ impl Scraper {
                 let mut salary_range_text: String = salary_range_element.text().await?;
 
                 salary_range_text = String::from(salary_range_text.trim());
-                salary_range_text = salary_range_text.replace("•", "");
+                salary_range_text = salary_range_text.replace('•', "");
                 salary_range_text = String::from(salary_range_text.trim());
 
                 job_data.job_salary_range = salary_range_text;
@@ -203,7 +201,7 @@ impl Scraper {
                 job_data.job_description = job_description_text;
                 job_data.job_tags = job_tags;
                 info!("Successfully scraped job details from: {}", job_url);
-                driver.clone().quit().await?;
+                // driver.clone().quit().await?;
                 Ok((job_data, true))
             }
             Err(e) => Err(e),
