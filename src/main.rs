@@ -1,4 +1,5 @@
 #![allow(dead_code)]
+#[allow(clippy::redundant_pattern_matching)]
 
 mod config;
 mod models;
@@ -6,7 +7,6 @@ mod scraper;
 mod selectors;
 mod utils;
 use log::info;
-#[allow(clippy::redundant_pattern_matching)]
 #[tokio::main]
 async fn main() {
     // Create a new instance of Scraper

@@ -8,7 +8,6 @@ use std::time::Duration;
 use thirtyfour::prelude::*;
 
 const DRIVER_WAIT_DURATION: u64 = 10;
-const MAX_WORKERS: u32 = 5;
 const SCROLL_PAUSE_TIME: f32 = 0.5;
 
 async fn perform_action_on_element(
@@ -76,31 +75,30 @@ impl Scraper {
         }
 
         let driver: &WebDriver = self.driver.as_ref().unwrap();
-        self.driver
+        driver
             .goto("https://www.workatastartup.com/companies")
             .await?;
 
-        let username_input: WebElement = perform_action_on_element(
-            &driver,
+        let _username_input: WebElement = perform_action_on_element(
+            driver,
             selectors::USERNAME_INPUT_XPATH,
             "send_keys",
             Some(username),
         )
         .await?;
-        let password_input: WebElement = perform_action_on_element(
-            &driver,
+        let _password_input: WebElement = perform_action_on_element(
+            driver,
             selectors::PASSWORD_INPUT_XPATH,
             "send_keys",
             Some(password),
         )
         .await?;
-        let login_button: WebElement =
-            perform_action_on_element(&driver, selectors::LOGIN_BUTTON_XPATH, "click", None)
+        let _login_button: WebElement =
+            perform_action_on_element(driver, selectors::LOGIN_BUTTON_XPATH, "click", None).await?;
+        let _submit_button: WebElement =
+            perform_action_on_element(driver, selectors::SUBMIT_BUTTON_XPATH, "click", None)
                 .await?;
-        let submit_button: WebElement =
-            perform_action_on_element(&driver, selectors::SUBMIT_BUTTON_XPATH, "click", None)
-                .await?;
-
+        driver.quit();
         info!("Successfully logged in!");
         Ok(true)
     }
@@ -126,19 +124,19 @@ impl Scraper {
 
                 thread::sleep(Duration::from_secs(DRIVER_WAIT_DURATION));
                 let founders_names: Vec<WebElement> =
-                    find_elements_by_class(&driver, selectors::FOUNDER_NAME_CLASS).await?;
+                    find_elements_by_class(driver, selectors::FOUNDER_NAME_CLASS).await?;
                 let founders_images: Vec<WebElement> =
-                    find_elements_by_class(&driver, selectors::FOUNDER_IMAGE_CLASS).await?;
+                    find_elements_by_class(driver, selectors::FOUNDER_IMAGE_CLASS).await?;
                 let founders_descriptions: Vec<WebElement> =
-                    find_elements_by_class(&driver, selectors::FOUNDER_DESCRIPTION_CLASS_ONE)
+                    find_elements_by_class(driver, selectors::FOUNDER_DESCRIPTION_CLASS_ONE)
                         .await
                         .or(find_elements_by_class(
-                            &driver,
+                            driver,
                             selectors::FOUNDER_DESCRIPTION_CLASS_TWO,
                         )
                         .await)?;
                 let founders_linkedins: Vec<WebElement> =
-                    find_elements_by_class(&driver, selectors::FOUNDER_LINKEDIN_CLASS).await?;
+                    find_elements_by_class(driver, selectors::FOUNDER_LINKEDIN_CLASS).await?;
                 for i in 0..founders_names.len() {
                     let founder_name: String = founders_names[i].text().await?;
                     let founder_image_url: Option<String> = founders_images[i].attr("src").await?;
@@ -161,7 +159,7 @@ impl Scraper {
                     "Successfully scraped founder's details from: {}",
                     company_url
                 );
-                // driver.clone().quit().await?;
+                driver.quit();
                 Ok((founders_list, true))
             }
             Err(e) => Err(e),
@@ -201,7 +199,7 @@ impl Scraper {
                     find_elements_by_class(driver, selectors::JOB_TAGS_CLASS).await?;
                 let mut job_tags: Vec<String> = Vec::new();
                 for tag in job_tags_elements {
-                    let new_tag = tag.text().await?;
+                    let new_tag: String = tag.text().await?;
                     let split_tags: Vec<&str> = new_tag.split('\n').collect();
                     for split_tag in split_tags {
                         job_tags.push(split_tag.to_string());
@@ -218,8 +216,9 @@ impl Scraper {
                 job_data.job_tags = job_tags;
 
                 info!("Successfully scraped job details from: {}", job_url);
+                driver.quit();
 
-                Ok(job_data)
+                Ok((job_data, true))
             }
             Err(e) => Err(e),
         }
