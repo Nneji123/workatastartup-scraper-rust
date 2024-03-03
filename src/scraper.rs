@@ -67,23 +67,23 @@ async fn create_chrome_driver() -> WebDriverResult<WebDriver> {
             .await?;
 
         let _username_input: WebElement = perform_action_on_element(
-            driver,
+            driver.clone(),
             selectors::USERNAME_INPUT_XPATH,
             "send_keys",
             Some(username),
         )
         .await?;
         let _password_input: WebElement = perform_action_on_element(
-            driver,
+            driver.clone(),
             selectors::PASSWORD_INPUT_XPATH,
             "send_keys",
             Some(password),
         )
         .await?;
         let _login_button: WebElement =
-            perform_action_on_element(driver, selectors::LOGIN_BUTTON_XPATH, "click", None).await?;
+            perform_action_on_element(driver.clone(), selectors::LOGIN_BUTTON_XPATH, "click", None).await?;
         let _submit_button: WebElement =
-            perform_action_on_element(driver, selectors::SUBMIT_BUTTON_XPATH, "click", None)
+            perform_action_on_element(driver.clone(), selectors::SUBMIT_BUTTON_XPATH, "click", None)
                 .await?;
         driver.quit().await?;
         info!("Successfully logged in!");
@@ -107,19 +107,19 @@ async fn create_chrome_driver() -> WebDriverResult<WebDriver> {
 
                 thread::sleep(Duration::from_secs(DRIVER_WAIT_DURATION));
                 let founders_names: Vec<WebElement> =
-                    find_elements_by_class(driver, selectors::FOUNDER_NAME_CLASS).await?;
+                    find_elements_by_class(driver.clone(), selectors::FOUNDER_NAME_CLASS).await?;
                 let founders_images: Vec<WebElement> =
-                    find_elements_by_class(driver, selectors::FOUNDER_IMAGE_CLASS).await?;
+                    find_elements_by_class(driver.clone(), selectors::FOUNDER_IMAGE_CLASS).await?;
                 let founders_descriptions: Vec<WebElement> =
-                    find_elements_by_class(driver, selectors::FOUNDER_DESCRIPTION_CLASS_ONE)
+                    find_elements_by_class(driver.clone(), selectors::FOUNDER_DESCRIPTION_CLASS_ONE)
                         .await
                         .or(find_elements_by_class(
-                            driver,
+                            driver.clone(),
                             selectors::FOUNDER_DESCRIPTION_CLASS_TWO,
                         )
                         .await)?;
                 let founders_linkedins: Vec<WebElement> =
-                    find_elements_by_class(driver, selectors::FOUNDER_LINKEDIN_CLASS).await?;
+                    find_elements_by_class(driver.clone(), selectors::FOUNDER_LINKEDIN_CLASS).await?;
                 for i in 0..founders_names.len() {
                     let founder_name: String = founders_names[i].text().await?;
                     let founder_image_url: Option<String> = founders_images[i].attr("src").await?;
@@ -167,15 +167,15 @@ pub async fn scrape_job_data(
                 thread::sleep(Duration::from_secs(DRIVER_WAIT_DURATION));
 
                 let job_title_element =
-                    find_element_by_class(driver, selectors::JOB_TITLE_CLASS).await?;
+                    find_element_by_class(driver.clone(), selectors::JOB_TITLE_CLASS).await?;
                 let job_title_text = job_title_element.text().await?;
 
                 let job_description_element =
-                    find_element_by_class(driver, selectors::JOB_DESCRIPTION_CLASS).await?;
+                    find_element_by_class(driver.clone(), selectors::JOB_DESCRIPTION_CLASS).await?;
                 let job_description_text = strip_html_tags(&job_description_element.text().await?);
 
                 let job_tags_elements =
-                    find_elements_by_class(driver, selectors::JOB_TAGS_CLASS).await?;
+                    find_elements_by_class(driver.clone(), selectors::JOB_TAGS_CLASS).await?;
                 let mut job_tags: Vec<String> = Vec::new();
                 for tag in job_tags_elements {
                     let new_tag: String = tag.text().await?;
@@ -186,7 +186,7 @@ pub async fn scrape_job_data(
                 }
 
                 let salary_range_element =
-                    find_element_by_class(driver, selectors::SALARY_RANGE_CLASS).await?;
+                    find_element_by_class(driver.clone(), selectors::SALARY_RANGE_CLASS).await?;
                 let salary_range_text = salary_range_element.text().await?.trim().replace('•', "");
 
                 job_data.job_salary_range = salary_range_text;
