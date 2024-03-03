@@ -2,7 +2,7 @@
 mod test_scraper {
     use serial_test::serial;
     use thirtyfour::prelude::*;
-    use ycombinator_scraper_rust::scraper::{
+    use workatastartup_scraper::scraper::{
         create_chrome_driver, find_element_by_class, find_elements_by_class,
         perform_action_on_element,
     };
