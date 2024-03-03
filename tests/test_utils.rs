@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod test_utils {
-    use ycombinator_scraper_rust::utils::{
+    use workatastartup_scraper::utils::{
         strip_html_tags, validate_company_url, validate_job_url,
     };
 
