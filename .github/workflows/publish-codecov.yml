@@ -13,6 +13,9 @@ jobs:
         run: rustup update stable
       - name: Install cargo-llvm-cov
         uses: taiki-e/install-action@cargo-llvm-cov
+
+      - name: Install Chrome
+        run: chmod u+x ./scripts/install_chrome.sh && ./scripts/install_chrome.sh
       - name: Generate code coverage
         run: cargo llvm-cov --all-features --workspace --lcov --output-path lcov.info
       - name: Upload coverage to Codecov
