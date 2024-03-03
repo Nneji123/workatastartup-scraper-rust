@@ -3,6 +3,7 @@ use crate::models::{FounderData, JobData};
 use crate::selectors;
 use crate::utils::{strip_html_tags, validate_company_url, validate_job_url};
 use log::info;
+use std::process::Command;
 use std::thread;
 use std::time::Duration;
 use thirtyfour::prelude::*;
@@ -10,7 +11,7 @@ use thirtyfour::prelude::*;
 const DRIVER_WAIT_DURATION: u64 = 10;
 const SCROLL_PAUSE_TIME: f32 = 0.5;
 
-async fn perform_action_on_element(
+pub async fn perform_action_on_element(
     driver: WebDriver,
     xpath: &str,
     action: &str,
@@ -30,32 +31,48 @@ async fn perform_action_on_element(
     Ok(element)
 }
 
-async fn find_element_by_class(driver: WebDriver, class_name: &str) -> WebDriverResult<WebElement> {
+pub async fn find_element_by_class(
+    driver: WebDriver,
+    class_name: &str,
+) -> WebDriverResult<WebElement> {
     driver.find(By::ClassName(class_name)).await
 }
 
-async fn find_elements_by_class(
+pub async fn find_elements_by_class(
     driver: WebDriver,
     class_name: &str,
 ) -> WebDriverResult<Vec<WebElement>> {
     driver.find_all(By::ClassName(class_name)).await
 }
 
-async fn create_chrome_driver() -> WebDriverResult<WebDriver> {
+pub async fn create_chrome_driver(port: i32) -> WebDriverResult<WebDriver> {
+    let chromedriver_cmd: &str = if std::env::consts::OS == "windows" {
+        "./chromedriver.exe"
+    } else {
+        "chromedriver"
+    };
+
+    let chromedriver_url: std::process::Child = Command::new(chromedriver_cmd)
+        .arg(format!("--port={port}"))
+        .arg("--whitelisted-ips=''")
+        .spawn()
+        .expect("Chromedriver not found. Make sure you have it installed!");
+    std::thread::sleep(std::time::Duration::from_secs(1));
     let chrome_options: fn() -> thirtyfour::ChromeCapabilities = DesiredCapabilities::chrome;
     let mut capabilities = chrome_options();
-
     capabilities
         .add_chrome_arg("--headless")
         .expect("Error occurred with headless mode");
-
-    let driver: WebDriver = WebDriver::new("http://localhost:9515", capabilities).await?;
+    let local_host_url: String = format!("http://localhost:{port}");
+    let driver: WebDriver = WebDriver::new(&local_host_url, capabilities).await?;
     Ok(driver)
 }
 
 /// Function to login to WorkataStartup.com
 pub async fn login(username: &str, password: &str) -> WebDriverResult<bool> {
-    let driver: WebDriver = create_chrome_driver().await?;
+    let port: i32 = 9515;
+
+    let driver: WebDriver = create_chrome_driver(port).await?;
     info!("WebDriver initialized");
     driver
         .goto("https://www.workatastartup.com/companies")
@@ -101,7 +118,9 @@ pub async fn scrape_founders_data(
 
             let mut founders_list: Vec<FounderData> = Vec::new();
 
-            let driver: WebDriver = create_chrome_driver().await?;
+            let port: i32 = 9515;
+
+            let driver: WebDriver = create_chrome_driver(port).await?;
             info!("WebDriver initialized");
             driver.goto(company_url).await?;
 
@@ -157,7 +176,9 @@ pub async fn scrape_job_data(job_url: &str) -> Result<(JobData, bool), WebDriver
             // Proceed with scraping
             println!("Scraping job details from: {}", job_url);
 
-            let driver: WebDriver = create_chrome_driver().await?;
+            let port: i32 = 9515;
+
+            let driver: WebDriver = create_chrome_driver(port).await?;
             info!("WebDriver initialized");
             driver.goto(job_url).await?;
             let mut job_data: JobData = JobData::new();
