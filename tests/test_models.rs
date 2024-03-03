@@ -1,6 +1,6 @@
 mod test_models {
     use serde_json;
-    use ycombinator_scraper_rust::models::{CompanyData, FounderData, JobData, ScrapedData};
+    use workatastartup_scraper::models::{CompanyData, FounderData, JobData, ScrapedData};
 
     #[test]
     fn test_serde_founders() {
