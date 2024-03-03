@@ -1,5 +1,5 @@
 mod test_config {
-    use ycombinator_scraper_rust::config::Config;
+    use workatastartup_scraper::config::Config;
 
     #[test]
     fn test_from_env() {
