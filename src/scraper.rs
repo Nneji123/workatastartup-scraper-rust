@@ -11,7 +11,7 @@ const DRIVER_WAIT_DURATION: u64 = 10;
 const SCROLL_PAUSE_TIME: f32 = 0.5;
 
 async fn perform_action_on_element(
-    driver: &WebDriver,
+    driver: WebDriver,
     xpath: &str,
     action: &str,
     value: Option<&str>,
@@ -31,42 +31,36 @@ async fn perform_action_on_element(
 }
 
 async fn find_element_by_class(
-    driver: &WebDriver,
+    driver: WebDriver,
     class_name: &str,
 ) -> WebDriverResult<WebElement> {
     driver.find(By::ClassName(class_name)).await
 }
 
 async fn find_elements_by_class(
-    driver: &WebDriver,
+    driver: WebDriver,
     class_name: &str,
 ) -> WebDriverResult<Vec<WebElement>> {
     driver.find_all(By::ClassName(class_name)).await
 }
 
-pub struct Scraper {
-    pub driver: Option<WebDriver>,
+async fn create_chrome_driver() -> WebDriverResult<WebDriver> {
+    let chrome_options: fn() -> thirtyfour::ChromeCapabilities = DesiredCapabilities::chrome;
+    let mut capabilities = chrome_options();
+
+    capabilities
+        .add_chrome_arg("--headless")
+        .expect("Error occurred with headless mode");
+
+    let driver: WebDriver = WebDriver::new("http://localhost:9515", capabilities).await?;
+    Ok(driver)
 }
 
-impl Default for Scraper {
-    fn default() -> Self {
-        Self::new()
-    }
-}
 
-impl Scraper {
-    pub fn new() -> Self {
-        Self { driver: None }
-    }
-   
-    /// Function to login to WorkataStartup.com
-    pub async fn login(&mut self, username: &str, password: &str) -> WebDriverResult<bool> {
-let chrome_options: fn() -> thirtyfour::ChromeCapabilities = DesiredCapabilities::chrome;
-        chrome_options()
-            .add_chrome_arg("--headless")
-            .expect("Error occured with headless mode");
+/// Function to login to WorkataStartup.com
+    pub async fn login(username: &str, password: &str) -> WebDriverResult<bool> {
 
-        let driver: WebDriver = WebDriver::new("http://localhost:9515", chrome_options()).await?;
+        let driver: WebDriver = create_chrome_driver().await?;
         info!("WebDriver initialized");
         driver
             .goto("https://www.workatastartup.com/companies")
@@ -97,7 +91,6 @@ let chrome_options: fn() -> thirtyfour::ChromeCapabilities = DesiredCapabilities
     }
     /// Scraper Founders Data Based on the company url.
     pub async fn scrape_founders_data(
-        &mut self,
         company_url: &str,
     ) -> Result<(Vec<FounderData>, bool), WebDriverError> {
         // Validate the company URL
@@ -108,12 +101,7 @@ let chrome_options: fn() -> thirtyfour::ChromeCapabilities = DesiredCapabilities
 
                 let mut founders_list: Vec<FounderData> = Vec::new();
 
-                        let chrome_options: fn() -> thirtyfour::ChromeCapabilities = DesiredCapabilities::chrome;
-        chrome_options()
-            .add_chrome_arg("--headless")
-            .expect("Error occured with headless mode");
-
-        let driver: WebDriver = WebDriver::new("http://localhost:9515", chrome_options()).await?;
+                        let driver: WebDriver = create_chrome_driver().await?;
         info!("WebDriver initialized");
                 driver.goto(company_url).await?;
 
@@ -163,7 +151,6 @@ let chrome_options: fn() -> thirtyfour::ChromeCapabilities = DesiredCapabilities
 
     ///Function to scrape job details from WorkataStartup.com
     pub async fn scrape_job_data(
-        &mut self,
         job_url: &str,
     ) -> Result<(JobData, bool), WebDriverError> {
         // Validate the company URL
@@ -172,12 +159,7 @@ let chrome_options: fn() -> thirtyfour::ChromeCapabilities = DesiredCapabilities
                 // Proceed with scraping
                 println!("Scraping job details from: {}", job_url);
 
-                        let chrome_options: fn() -> thirtyfour::ChromeCapabilities = DesiredCapabilities::chrome;
-        chrome_options()
-            .add_chrome_arg("--headless")
-            .expect("Error occured with headless mode");
-
-        let driver: WebDriver = WebDriver::new("http://localhost:9515", chrome_options()).await?;
+                        let driver: WebDriver = create_chrome_driver().await?;
         info!("WebDriver initialized");
                 driver.goto(job_url).await?;
                 let mut job_data: JobData = JobData::new();
