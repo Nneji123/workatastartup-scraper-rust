@@ -39,19 +39,41 @@ impl JobData {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-struct CompanyData {
-    company_name: String,
-    company_url: String,
-    company_description: String,
-    company_tags: Vec<String>,
-    company_image: String,
-    company_social_links: Vec<String>,
-    company_job_links: Vec<String>,
-    company_founders: Vec<FounderData>,
-    job_data: Vec<JobData>,
+pub struct CompanyData {
+    pub company_name: String,
+    pub company_url: String,
+    pub company_description: String,
+    pub company_tags: Vec<String>,
+    pub company_image: String,
+    pub company_social_links: Vec<String>,
+    pub company_job_links: Vec<String>,
+    pub company_founders: Vec<FounderData>,
+    pub job_data: Vec<JobData>,
+}
+
+impl Default for CompanyData {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl CompanyData {
+    pub fn new() -> Self {
+        CompanyData {
+            company_url: String::new(),
+            company_image: String::new(),
+            company_description: String::new(),
+            company_founders: Vec::<FounderData>::new(),
+            company_name: String::new(),
+            company_job_links: Vec::new(),
+            company_social_links: Vec::new(),
+            company_tags: Vec::new(),
+            job_data: Vec::<JobData>::new(),
+        }
+    }
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-struct ScrapedData {
-    scraped_data: Vec<CompanyData>,
+pub struct ScrapedData {
+    pub scraped_data: Vec<CompanyData>,
 }
