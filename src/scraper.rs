@@ -98,7 +98,7 @@ impl Scraper {
         let _submit_button: WebElement =
             perform_action_on_element(driver, selectors::SUBMIT_BUTTON_XPATH, "click", None)
                 .await?;
-        driver.quit();
+        driver.quit().await?;
         info!("Successfully logged in!");
         Ok(true)
     }
@@ -159,7 +159,7 @@ impl Scraper {
                     "Successfully scraped founder's details from: {}",
                     company_url
                 );
-                driver.quit();
+                driver.quit().await?;
                 Ok((founders_list, true))
             }
             Err(e) => Err(e),
@@ -216,7 +216,7 @@ impl Scraper {
                 job_data.job_tags = job_tags;
 
                 info!("Successfully scraped job details from: {}", job_url);
-                driver.quit();
+                driver.quit().await?;
 
                 Ok((job_data, true))
             }
