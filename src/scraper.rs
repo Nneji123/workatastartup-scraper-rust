@@ -11,6 +11,40 @@ const DRIVER_WAIT_DURATION: u64 = 10;
 const MAX_WORKERS: u32 = 5;
 const SCROLL_PAUSE_TIME: f32 = 0.5;
 
+async fn perform_action_on_element(
+    driver: &WebDriver,
+    xpath: &str,
+    action: &str,
+    value: Option<&str>,
+) -> WebDriverResult<WebElement> {
+    let element: WebElement = driver.query(By::XPath(xpath)).first().await?;
+    element.wait_until().displayed().await?;
+    match action {
+        "click" => element.click().await?,
+        "send_keys" => {
+            if let Some(keys) = value {
+                element.send_keys(keys).await?;
+            }
+        }
+        _ => (), // Handle other actions if needed
+    };
+    Ok(element)
+}
+
+async fn find_element_by_class(
+    driver: &WebDriver,
+    class_name: &str,
+) -> WebDriverResult<WebElement> {
+    driver.find(By::ClassName(class_name)).await
+}
+
+async fn find_elements_by_class(
+    driver: &WebDriver,
+    class_name: &str,
+) -> WebDriverResult<Vec<WebElement>> {
+    driver.find_all(By::ClassName(class_name)).await
+}
+
 pub struct Scraper {
     pub driver: Option<WebDriver>,
 }
@@ -27,10 +61,6 @@ impl Scraper {
     }
     async fn initialize_driver(&self) -> WebDriverResult<WebDriver> {
         let chrome_options: fn() -> thirtyfour::ChromeCapabilities = DesiredCapabilities::chrome;
-
-        chrome_options()
-            .set_binary("./chromedriver.exe")
-            .expect("Error getting chromedriver path");
         chrome_options()
             .add_chrome_arg("--headless")
             .expect("Error occured with headless mode");
@@ -46,36 +76,31 @@ impl Scraper {
         }
 
         let driver: &WebDriver = self.driver.as_ref().unwrap();
-        driver
+        self.driver
             .goto("https://www.workatastartup.com/companies")
             .await?;
 
-        let login_button: WebElement = driver
-            .query(By::XPath(selectors::LOGIN_BUTTON_XPATH))
-            .first()
-            .await?;
-        login_button.wait_until().displayed().await?;
-        login_button.click().await?;
+        let username_input: WebElement = perform_action_on_element(
+            &driver,
+            selectors::USERNAME_INPUT_XPATH,
+            "send_keys",
+            Some(username),
+        )
+        .await?;
+        let password_input: WebElement = perform_action_on_element(
+            &driver,
+            selectors::PASSWORD_INPUT_XPATH,
+            "send_keys",
+            Some(password),
+        )
+        .await?;
+        let login_button: WebElement =
+            perform_action_on_element(&driver, selectors::LOGIN_BUTTON_XPATH, "click", None)
+                .await?;
+        let submit_button: WebElement =
+            perform_action_on_element(&driver, selectors::SUBMIT_BUTTON_XPATH, "click", None)
+                .await?;
 
-        let username_input: WebElement = driver
-            .query(By::XPath(selectors::USERNAME_INPUT_XPATH))
-            .first()
-            .await?;
-        username_input.wait_until().displayed().await?;
-        let password_input: WebElement = driver
-            .query(By::XPath(selectors::PASSWORD_INPUT_XPATH))
-            .first()
-            .await?;
-        password_input.wait_until().displayed().await?;
-        let submit_button: WebElement = driver
-            .query(By::XPath(selectors::SUBMIT_BUTTON_XPATH))
-            .first()
-            .await?;
-        submit_button.wait_until().displayed().await?;
-
-        username_input.send_keys(username).await?;
-        password_input.send_keys(password).await?;
-        login_button.click().await?;
         info!("Successfully logged in!");
         Ok(true)
     }
@@ -100,21 +125,20 @@ impl Scraper {
                 driver.goto(company_url).await?;
 
                 thread::sleep(Duration::from_secs(DRIVER_WAIT_DURATION));
-                let founders_names: Vec<WebElement> = driver
-                    .find_all(By::ClassName(selectors::FOUNDER_NAME_CLASS))
-                    .await?;
-                let founders_images: Vec<WebElement> = driver
-                    .find_all(By::ClassName(selectors::FOUNDER_IMAGE_CLASS))
-                    .await?;
-                let founders_descriptions: Vec<WebElement> = driver
-                    .find_all(By::ClassName(selectors::FOUNDER_DESCRIPTION_CLASS_ONE))
-                    .await
-                    .or(driver
-                        .find_all(By::ClassName(selectors::FOUNDER_DESCRIPTION_CLASS_TWO))
+                let founders_names: Vec<WebElement> =
+                    find_elements_by_class(&driver, selectors::FOUNDER_NAME_CLASS).await?;
+                let founders_images: Vec<WebElement> =
+                    find_elements_by_class(&driver, selectors::FOUNDER_IMAGE_CLASS).await?;
+                let founders_descriptions: Vec<WebElement> =
+                    find_elements_by_class(&driver, selectors::FOUNDER_DESCRIPTION_CLASS_ONE)
+                        .await
+                        .or(find_elements_by_class(
+                            &driver,
+                            selectors::FOUNDER_DESCRIPTION_CLASS_TWO,
+                        )
                         .await)?;
-                let founders_linkedins: Vec<WebElement> = driver
-                    .find_all(By::ClassName(selectors::FOUNDER_LINKEDIN_CLASS))
-                    .await?;
+                let founders_linkedins: Vec<WebElement> =
+                    find_elements_by_class(&driver, selectors::FOUNDER_LINKEDIN_CLASS).await?;
                 for i in 0..founders_names.len() {
                     let founder_name: String = founders_names[i].text().await?;
                     let founder_image_url: Option<String> = founders_images[i].attr("src").await?;
@@ -154,8 +178,6 @@ impl Scraper {
             Ok(()) => {
                 // Proceed with scraping
                 println!("Scraping job details from: {}", job_url);
-                let mut job_data: JobData = JobData::new();
-                job_data.job_url = String::from(job_url);
 
                 if self.driver.is_none() {
                     self.driver = Some(self.initialize_driver().await?);
@@ -163,22 +185,20 @@ impl Scraper {
 
                 let driver: &WebDriver = self.driver.as_ref().unwrap();
                 driver.goto(job_url).await?;
+                let mut job_data: JobData = JobData::new();
+                job_data.job_url = String::from(job_url);
                 thread::sleep(Duration::from_secs(DRIVER_WAIT_DURATION));
-                let job_title_element: WebElement = driver
-                    .find(By::ClassName(selectors::JOB_TITLE_CLASS))
-                    .await?;
-                let job_title_text: String = job_title_element.text().await?;
 
-                let job_description_element: WebElement = driver
-                    .find(By::ClassName(selectors::JOB_DESCRIPTION_CLASS))
-                    .await?;
-                let mut job_description_text: String = job_description_element.text().await?;
-                job_description_text = strip_html_tags(&job_description_text);
+                let job_title_element =
+                    find_element_by_class(driver, selectors::JOB_TITLE_CLASS).await?;
+                let job_title_text = job_title_element.text().await?;
 
-                let job_tags_elements: Vec<WebElement> = driver
-                    .find_all(By::ClassName(selectors::JOB_TAGS_CLASS))
-                    .await?;
+                let job_description_element =
+                    find_element_by_class(driver, selectors::JOB_DESCRIPTION_CLASS).await?;
+                let job_description_text = strip_html_tags(&job_description_element.text().await?);
 
+                let job_tags_elements =
+                    find_elements_by_class(driver, selectors::JOB_TAGS_CLASS).await?;
                 let mut job_tags: Vec<String> = Vec::new();
                 for tag in job_tags_elements {
                     let new_tag = tag.text().await?;
@@ -187,22 +207,19 @@ impl Scraper {
                         job_tags.push(split_tag.to_string());
                     }
                 }
-                let salary_range_element: WebElement = driver
-                    .find(By::ClassName(selectors::SALARY_RANGE_CLASS))
-                    .await?;
-                let mut salary_range_text: String = salary_range_element.text().await?;
 
-                salary_range_text = String::from(salary_range_text.trim());
-                salary_range_text = salary_range_text.replace('•', "");
-                salary_range_text = String::from(salary_range_text.trim());
+                let salary_range_element =
+                    find_element_by_class(driver, selectors::SALARY_RANGE_CLASS).await?;
+                let salary_range_text = salary_range_element.text().await?.trim().replace('•', "");
 
                 job_data.job_salary_range = salary_range_text;
                 job_data.job_title = job_title_text;
                 job_data.job_description = job_description_text;
                 job_data.job_tags = job_tags;
+
                 info!("Successfully scraped job details from: {}", job_url);
-                // driver.clone().quit().await?;
-                Ok((job_data, true))
+
+                Ok(job_data)
             }
             Err(e) => Err(e),
         }

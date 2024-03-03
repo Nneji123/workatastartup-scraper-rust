@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM rust:1.76.0-slim-buster
 
 WORKDIR /app
 
@@ -16,11 +16,10 @@ COPY ./scripts/install_chrome.sh /app
 RUN chmod u+x install_chrome.sh && \
     ./install_chrome.sh
 
-# TODO: Add extra dependencies, if needed
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-ENV PATH="/root/.cargo/bin:${PATH}"
+COPY . /app
 
-COPY . .
+RUN rustup component add rustfmt && \
+    rustup component add clippy
 
 # Commands for docker run
 CMD make clean && \

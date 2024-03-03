@@ -5,11 +5,15 @@ help:
 
 ready: fmt lint test
 
+run: ready
+	@echo "===> Running Rust Application"
+	cargo run
+
 docker-build:
-	docker build . -t nneji123/workatastartup-scraper
+	docker build --no-cache . -t app_$(notdir $(shell pwd))
 
 docker-ready: docker-build
-	docker run -v ./:/app -t nneji123/workatastartup-scraper
+	docker run -v $(shell pwd):/app -t app_$(notdir $(shell pwd))
 
 
 clean:
@@ -27,3 +31,4 @@ lint:
 test:
 	@echo "===> Testing EVERYTHING"
 	cargo test
+
