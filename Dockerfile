@@ -23,4 +23,4 @@ RUN rustup component add rustfmt && \
 
 # Commands for docker run
 CMD make clean && \
-    make ready
+    make run

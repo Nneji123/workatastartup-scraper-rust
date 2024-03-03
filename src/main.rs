@@ -1,6 +1,5 @@
 #![allow(dead_code)]
 #[allow(clippy::redundant_pattern_matching)]
-
 mod config;
 mod models;
 mod scraper;
