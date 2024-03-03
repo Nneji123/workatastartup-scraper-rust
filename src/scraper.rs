@@ -150,7 +150,7 @@ async fn create_chrome_driver() -> WebDriverResult<WebDriver> {
     }
 
     ///Function to scrape job details from WorkataStartup.com
-    pub async fn scrape_job_data(
+pub async fn scrape_job_data(
         job_url: &str,
     ) -> Result<(JobData, bool), WebDriverError> {
         // Validate the company URL
@@ -202,4 +202,3 @@ async fn create_chrome_driver() -> WebDriverResult<WebDriver> {
             Err(e) => Err(e),
         }
     }
-}
