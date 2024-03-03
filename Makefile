@@ -13,7 +13,7 @@ docker-build:
 	docker build --no-cache . -t app_$(notdir $(shell pwd))
 
 docker-ready: docker-build
-	docker run -v $(shell pwd):/app -t app_$(notdir $(shell pwd))
+	docker run -t app_$(notdir $(shell pwd))
 
 
 clean:

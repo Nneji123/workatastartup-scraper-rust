@@ -20,7 +20,7 @@ mod test_scraper {
     async fn test_perform_action_on_element() {
         let port: i32 = 44454;
         let driver: WebDriver = init_driver(port).await;
-        let xpath: &str = "//button[@id='submit-btn']";
+        let xpath: &str = r"//button[@id='submit-btn']";
         let action: &str = "click";
         let value: Option<&str> = None;
 
@@ -42,11 +42,12 @@ mod test_scraper {
     async fn test_find_element_by_class() {
         let port: i32 = 44454; // Reuse the same port as other tests
         let driver: WebDriver = init_driver(port).await;
-        let class_name: &str = "example-class";
+        let class_name: &str = r"mb-1.font-medium";
 
         // Test with valid class name
         let result: Result<WebElement, WebDriverError> =
             find_element_by_class(driver.clone(), class_name).await;
+        println!("{:?}", result);
         assert!(result.is_ok());
     }
 
@@ -61,6 +62,7 @@ mod test_scraper {
         // Test with valid class name
         let result: Result<Vec<WebElement>, WebDriverError> =
             find_elements_by_class(driver.clone(), class_name).await;
+        assert!(result.is_ok());
     }
 
     #[tokio::main]

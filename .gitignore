@@ -4,3 +4,4 @@ google-chrome-stable_current_amd64.deb
 chromedriver
 chromedriver.exe
 chromedriver-win64.zip
+test.sh

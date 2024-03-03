@@ -49,7 +49,7 @@ pub async fn create_chrome_driver(port: i32) -> WebDriverResult<WebDriver> {
     let chromedriver_cmd: &str = if std::env::consts::OS == "windows" {
         "./chromedriver.exe"
     } else {
-        "chromedriver"
+        "./chromedriver"
     };
 
     let chromedriver_url: std::process::Child = Command::new(chromedriver_cmd)
@@ -59,9 +59,22 @@ pub async fn create_chrome_driver(port: i32) -> WebDriverResult<WebDriver> {
     std::thread::sleep(std::time::Duration::from_secs(1));
     let chrome_options: fn() -> thirtyfour::ChromeCapabilities = DesiredCapabilities::chrome;
     let mut capabilities = chrome_options();
-    // capabilities
-    //     .add_chrome_arg("--headless")
-    //     .expect("Error occurred with headless mode");
+    capabilities
+        .add_chrome_arg("--headless")
+        .expect("Error occurred with headless mode");
+
+    capabilities
+        .add_chrome_arg("--disable-dev-shm-usage")
+        .expect("Error occurred with headless mode");
+
+    capabilities
+        .add_chrome_arg("--log-level=3")
+        .expect("Error occurred with headless mode");
+
+    capabilities
+        .add_chrome_arg("--no-sandbox")
+        .expect("Error occurred with headless mode");
+
     let local_host_url: String = format!("http://localhost:{port}");
     let driver: WebDriver = WebDriver::new(&local_host_url, capabilities).await?;
     Ok(driver)
