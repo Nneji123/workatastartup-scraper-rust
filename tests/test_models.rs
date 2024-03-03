@@ -1,12 +1,9 @@
 mod test_models {
-    use ycombinator_scraper_rust::models::{CompanyData, FounderData, JobData, ScrapedData};
-    // Import necessary modules
     use serde_json;
+    use ycombinator_scraper_rust::models::{CompanyData, FounderData, JobData, ScrapedData};
 
-    // Define a test function to serialize and deserialize structs
     #[test]
     fn test_serde_founders() {
-        // Create sample data
         let job_data = FounderData {
             founder_name: "John Doe".to_string(),
             founder_description: "Co-founder & CEO".to_string(),
@@ -18,12 +15,10 @@ mod test_models {
             ]),
         };
 
-        // Serialize and then deserialize job_data
         let serialized_job_data = serde_json::to_string(&job_data).unwrap();
         let deserialized_job_data: FounderData =
             serde_json::from_str(&serialized_job_data).unwrap();
 
-        // Verify that serialization and deserialization worked correctly
         assert_eq!(job_data.founder_name, deserialized_job_data.founder_name);
         assert_eq!(
             job_data.founder_description,
@@ -54,11 +49,9 @@ mod test_models {
             job_description: "Skilled Ml engineer specializing in LLM's".to_string(),
         };
 
-        // Serialize and then deserialize job_data
         let serialized_job_data: String = serde_json::to_string(&job_data).unwrap();
         let deserialized_job_data: JobData = serde_json::from_str(&serialized_job_data).unwrap();
 
-        // Verify that serialization and deserialization worked correctly
         assert_eq!(job_data.job_title, deserialized_job_data.job_title);
         assert_eq!(
             job_data.job_description,
@@ -93,12 +86,10 @@ mod test_models {
             job_data: vec![JobData::default()],
         };
 
-        // Serialize and then deserialize CompanyData
         let serialized_company_data: String = serde_json::to_string(&company_data).unwrap();
         let deserialized_company_data: CompanyData =
             serde_json::from_str(&serialized_company_data).unwrap();
 
-        // Verify that serialization and deserialization worked correctly
         assert_eq!(
             company_data.company_name,
             deserialized_company_data.company_name
@@ -127,7 +118,6 @@ mod test_models {
             company_data.company_job_links,
             deserialized_company_data.company_job_links
         );
-        // Compare job_data vectors element-wise
         assert_eq!(
             company_data.job_data.len(),
             deserialized_company_data.job_data.len()
@@ -152,13 +142,10 @@ mod test_models {
             scraped_data: vec![CompanyData::default()],
         };
 
-        // Serialize and then deserialize ScrapedData
         let serialized_scraped_data = serde_json::to_string(&scraped_data).unwrap();
         let deserialized_scraped_data: ScrapedData =
             serde_json::from_str(&serialized_scraped_data).unwrap();
 
-        // Verify that serialization and deserialization worked correctly
-        // Verify that serialization and deserialization worked correctly
         assert_eq!(
             scraped_data.scraped_data.len(),
             deserialized_scraped_data.scraped_data.len()
