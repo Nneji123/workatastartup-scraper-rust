@@ -58,23 +58,16 @@ impl Scraper {
     pub fn new() -> Self {
         Self { driver: None }
     }
-    async fn initialize_driver(&self) -> WebDriverResult<WebDriver> {
-        let chrome_options: fn() -> thirtyfour::ChromeCapabilities = DesiredCapabilities::chrome;
+   
+    /// Function to login to WorkataStartup.com
+    pub async fn login(&mut self, username: &str, password: &str) -> WebDriverResult<bool> {
+let chrome_options: fn() -> thirtyfour::ChromeCapabilities = DesiredCapabilities::chrome;
         chrome_options()
             .add_chrome_arg("--headless")
             .expect("Error occured with headless mode");
 
         let driver: WebDriver = WebDriver::new("http://localhost:9515", chrome_options()).await?;
         info!("WebDriver initialized");
-        Ok(driver)
-    }
-    /// Function to login to WorkataStartup.com
-    pub async fn login(&mut self, username: &str, password: &str) -> WebDriverResult<bool> {
-        if self.driver.is_none() {
-            self.driver = Some(self.initialize_driver().await?);
-        }
-
-        let driver: &WebDriver = self.driver.as_ref().unwrap();
         driver
             .goto("https://www.workatastartup.com/companies")
             .await?;
@@ -115,11 +108,13 @@ impl Scraper {
 
                 let mut founders_list: Vec<FounderData> = Vec::new();
 
-                if self.driver.is_none() {
-                    self.driver = Some(self.initialize_driver().await?);
-                }
+                        let chrome_options: fn() -> thirtyfour::ChromeCapabilities = DesiredCapabilities::chrome;
+        chrome_options()
+            .add_chrome_arg("--headless")
+            .expect("Error occured with headless mode");
 
-                let driver: &WebDriver = self.driver.as_ref().unwrap();
+        let driver: WebDriver = WebDriver::new("http://localhost:9515", chrome_options()).await?;
+        info!("WebDriver initialized");
                 driver.goto(company_url).await?;
 
                 thread::sleep(Duration::from_secs(DRIVER_WAIT_DURATION));
@@ -177,11 +172,13 @@ impl Scraper {
                 // Proceed with scraping
                 println!("Scraping job details from: {}", job_url);
 
-                if self.driver.is_none() {
-                    self.driver = Some(self.initialize_driver().await?);
-                }
+                        let chrome_options: fn() -> thirtyfour::ChromeCapabilities = DesiredCapabilities::chrome;
+        chrome_options()
+            .add_chrome_arg("--headless")
+            .expect("Error occured with headless mode");
 
-                let driver: &WebDriver = self.driver.as_ref().unwrap();
+        let driver: WebDriver = WebDriver::new("http://localhost:9515", chrome_options()).await?;
+        info!("WebDriver initialized");
                 driver.goto(job_url).await?;
                 let mut job_data: JobData = JobData::new();
                 job_data.job_url = String::from(job_url);
