@@ -7,19 +7,20 @@ RUN apt-get update && \
     wget \
     unzip \
     dpkg \
-    gnupg
+    gnupg \
+    make
 
 # Install Chrome
-ADD ./github/scripts/install_chrome_and_chromedriver.sh /app
+COPY ./scripts/install_chrome.sh /app
 
-RUN chmod u+x install_chrome_and_chromedriver.sh && \
-    ./install_chrome_and_chromedriver.sh
+RUN chmod u+x install_chrome.sh && \
+    ./install_chrome.sh
 
 # TODO: Add extra dependencies, if needed
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 
-ADD . /app
+COPY . .
 
 # Commands for docker run
 CMD make clean && \

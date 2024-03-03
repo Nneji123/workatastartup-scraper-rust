@@ -1,9 +1,0 @@
-# version: "3.9"
-
-# services:
-#   redis:
-#     image: redis:alpine
-#     ports:
-#       - "6379:6379"
-
-# Edit this compose.yml file later to fit rust standards.

@@ -1,7 +1,3 @@
-##
-# Static part, don't change these:
-##
-
 .PHONY: help ready docker-build docker-ready fmt lint test
 
 help:
@@ -10,14 +6,11 @@ help:
 ready: fmt lint test
 
 docker-build:
-	docker build --no-cache . -t deez_$(notdir $(shell pwd))
+	docker build . -t nneji123/workatastartup-scraper
 
 docker-ready: docker-build
-	docker run -v $(shell pwd):/deez -t deez_$(notdir $(shell pwd))
+	docker run -v ./:/app -t nneji123/workatastartup-scraper
 
-##
-# Update those:
-##
 
 clean:
 	@echo "===> Cleaning"
