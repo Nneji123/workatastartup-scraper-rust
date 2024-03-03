@@ -6,7 +6,6 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-async-trait = "0.1.77"
 dotenv = "0.15.0"
 log = "0.4.21"
 regex = "1.10.3"
@@ -15,3 +14,6 @@ serde_json = "1.0.114"
 soup = "0.5.1"
 thirtyfour = "0.31.0"
 tokio = "1.36.0"
+
+[dev-dependencies]
+serial_test = "3.0.0"

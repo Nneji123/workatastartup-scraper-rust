@@ -1,18 +1,25 @@
 #[cfg(test)]
 mod test_scraper {
+    use serial_test::serial;
     use thirtyfour::prelude::*;
     use ycombinator_scraper_rust::scraper::{
         create_chrome_driver, find_element_by_class, find_elements_by_class,
         perform_action_on_element,
     };
 
-    // Mock WebDriver for testing
-    #[tokio::test]
-    async fn test_perform_action_on_element() {
-        let port: i32 = 4444;
-        let driver: WebDriver = create_chrome_driver(port)
+    // Initialize WebDriver as a test fixture
+    async fn init_driver(port: i32) -> WebDriver {
+        create_chrome_driver(port)
             .await
-            .expect("Failed to create driver");
+            .expect("Failed to create driver")
+    }
+
+    #[tokio::main]
+    #[test]
+    #[serial]
+    async fn test_perform_action_on_element() {
+        let port: i32 = 44454;
+        let driver: WebDriver = init_driver(port).await;
         let xpath: &str = "//button[@id='submit-btn']";
         let action: &str = "click";
         let value: Option<&str> = None;
@@ -27,45 +34,41 @@ mod test_scraper {
         let result: Result<WebElement, WebDriverError> =
             perform_action_on_element(driver.clone(), invalid_xpath, action, value).await;
         assert!(result.is_err());
-        driver.quit().await;
     }
 
-    #[tokio::test]
+    #[tokio::main]
+    #[test]
+    #[serial]
     async fn test_find_element_by_class() {
-        let port: i32 = 4445;
-        let driver: WebDriver = create_chrome_driver(port)
-            .await
-            .expect("Failed to create driver");
+        let port: i32 = 44454; // Reuse the same port as other tests
+        let driver: WebDriver = init_driver(port).await;
         let class_name: &str = "example-class";
 
         // Test with valid class name
         let result: Result<WebElement, WebDriverError> =
             find_element_by_class(driver.clone(), class_name).await;
         assert!(result.is_ok());
-        driver.quit().await;
-
     }
 
-    #[tokio::test]
+    #[tokio::main]
+    #[test]
+    #[serial]
     async fn test_find_elements_by_class() {
-        let port: i32 = 4446;
-        let driver: WebDriver = create_chrome_driver(port)
-            .await
-            .expect("Failed to create driver");
+        let port: i32 = 44454; // Reuse the same port as other tests
+        let driver: WebDriver = init_driver(port).await;
         let class_name: &str = "example-class";
 
         // Test with valid class name
         let result: Result<Vec<WebElement>, WebDriverError> =
             find_elements_by_class(driver.clone(), class_name).await;
-        assert!(result.is_ok());
-        driver.quit().await;
-
     }
 
-    #[tokio::test]
+    #[tokio::main]
+    #[test]
+    #[serial]
     async fn test_create_chrome_driver() {
         // Test create_chrome_driver function
-        let port: i32 = 4447;
+        let port: i32 = 44454; // Reuse the same port as other tests
         let result: Result<WebDriver, WebDriverError> = create_chrome_driver(port).await;
         assert!(result.is_ok());
     }

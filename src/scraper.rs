@@ -54,15 +54,14 @@ pub async fn create_chrome_driver(port: i32) -> WebDriverResult<WebDriver> {
 
     let chromedriver_url: std::process::Child = Command::new(chromedriver_cmd)
         .arg(format!("--port={port}"))
-        .arg("--whitelisted-ips=''")
         .spawn()
         .expect("Chromedriver not found. Make sure you have it installed!");
     std::thread::sleep(std::time::Duration::from_secs(1));
     let chrome_options: fn() -> thirtyfour::ChromeCapabilities = DesiredCapabilities::chrome;
     let mut capabilities = chrome_options();
-    capabilities
-        .add_chrome_arg("--headless")
-        .expect("Error occurred with headless mode");
+    // capabilities
+    //     .add_chrome_arg("--headless")
+    //     .expect("Error occurred with headless mode");
     let local_host_url: String = format!("http://localhost:{port}");
     let driver: WebDriver = WebDriver::new(&local_host_url, capabilities).await?;
     Ok(driver)
@@ -78,24 +77,24 @@ pub async fn login(username: &str, password: &str) -> WebDriverResult<bool> {
         .goto("https://www.workatastartup.com/companies")
         .await?;
 
-    let _username_input: WebElement = perform_action_on_element(
+    let username_input: WebElement = perform_action_on_element(
         driver.clone(),
         selectors::USERNAME_INPUT_XPATH,
         "send_keys",
         Some(username),
     )
     .await?;
-    let _password_input: WebElement = perform_action_on_element(
+    let password_input: WebElement = perform_action_on_element(
         driver.clone(),
         selectors::PASSWORD_INPUT_XPATH,
         "send_keys",
         Some(password),
     )
     .await?;
-    let _login_button: WebElement =
+    let login_button: WebElement =
         perform_action_on_element(driver.clone(), selectors::LOGIN_BUTTON_XPATH, "click", None)
             .await?;
-    let _submit_button: WebElement = perform_action_on_element(
+    let submit_button: WebElement = perform_action_on_element(
         driver.clone(),
         selectors::SUBMIT_BUTTON_XPATH,
         "click",
