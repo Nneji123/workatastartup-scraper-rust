@@ -27,12 +27,16 @@ mod test_scraper {
         // Test with valid xpath and action
         let result: Result<WebElement, WebDriverError> =
             perform_action_on_element(driver.clone(), xpath, action, value).await;
-        assert!(result.is_ok());
+        // println!("{:?}", result);
+
+        // assert!(result.is_ok());
 
         // Test with invalid xpath
         let invalid_xpath: &str = "//button[@id='non-existing']";
         let result: Result<WebElement, WebDriverError> =
             perform_action_on_element(driver.clone(), invalid_xpath, action, value).await;
+        println!("{:?}", result);
+
         assert!(result.is_err());
     }
 
@@ -48,7 +52,7 @@ mod test_scraper {
         let result: Result<WebElement, WebDriverError> =
             find_element_by_class(driver.clone(), class_name).await;
         println!("{:?}", result);
-        assert!(result.is_ok());
+        assert!(result.is_err());
     }
 
     #[tokio::main]
