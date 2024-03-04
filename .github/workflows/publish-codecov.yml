@@ -26,6 +26,6 @@ jobs:
         uses: codecov/codecov-action@v4.0.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          slug: Nneji123/ycombinator-scraper-rust
+          slug: Nneji123/workatastartup-scraper-rust
           files: lcov.info
           fail_ci_if_error: true
