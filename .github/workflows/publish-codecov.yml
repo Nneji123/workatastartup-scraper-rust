@@ -15,7 +15,11 @@ jobs:
         uses: taiki-e/install-action@cargo-llvm-cov
 
       - name: Install Chrome
-        run: chmod u+x ./scripts/install_chrome.sh && ./scripts/install_chrome.sh
+        run: |
+            chmod u+x ./scripts/install_chrome.sh
+            ./scripts/install_chrome.sh
+      - name: Create .env file
+        run: echo "${{ secrets.TEST_VARIABLES }}" > .env
       - name: Generate code coverage
         run: cargo llvm-cov --all-features --workspace --lcov --output-path lcov.info
       - name: Upload coverage to Codecov

@@ -12,8 +12,12 @@ jobs:
       - name: Install Rust
         run: rustup update stable
       - name: Install Chrome
-        run: chmod u+x ./scripts/install_chrome.sh && ./scripts/install_chrome.sh
+        run: |
+            chmod u+x ./scripts/install_chrome.sh
+            ./scripts/install_chrome.sh
       - name: Install dependencies
         run: cargo build
+      - name: Create .env file
+        run: echo "${{ secrets.TEST_VARIABLES }}" > .env
       - name: Run tests
         run: cargo test
