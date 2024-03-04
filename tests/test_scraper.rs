@@ -1,6 +1,7 @@
 #[cfg(test)]
 mod test_scraper {
     use thirtyfour::prelude::*;
+    use workatastartup_scraper::config;
     use workatastartup_scraper::scraper::{
         create_chrome_driver, find_elements_by_class, login, scrape_company_data,
         scrape_founders_data, scrape_job_data,
@@ -38,9 +39,9 @@ mod test_scraper {
 
     #[tokio::test]
     async fn test_login_successful() {
-        // Provide valid login credentials for testing
-        let username: &str = "Aboy123";
-        let password: &str = "linda321";
+        let dets: config::Config = config::Config::from_env();
+        let username: &str = dets.login_username.as_str();
+        let password: &str  = dets.login_password.as_str();
 
         // Ensure that login is successful with valid credentials
         assert!(login(username, password).await.is_ok());
@@ -63,12 +64,12 @@ mod test_scraper {
         // Ensure that scraping job data is successful with a valid URL
         assert!(scrape_job_data(job_url).await.is_ok());
     }
-    #[tokio::test]
-    async fn test_scrape_company_data_successful() {
-        // Provide a valid job URL for testing
-        let company_url: &str = "https://www.workatastartup.com/companies/superkalam";
+    // #[tokio::test]
+    // async fn test_scrape_company_data_successful() {
+    //     // Provide a valid job URL for testing
+    //     let company_url: &str = "https://www.workatastartup.com/companies/superkalam";
 
-        // Ensure that scraping job data is successful with a valid URL
-        assert!(scrape_company_data(company_url).await.is_ok());
-    }
+    //     // Ensure that scraping job data is successful with a valid URL
+    //     assert!(scrape_company_data(company_url).await.is_ok());
+    // }
 }

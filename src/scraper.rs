@@ -136,8 +136,6 @@ pub async fn scrape_company_data(company_url: &str) -> Result<(CompanyData, bool
                     .await?
                     .text()
                     .await)?;
-            let (founders_data, _) = scrape_founders_data(company_url).await?;
-            company_data.company_founders = founders_data;
             let mut job_links = Vec::new();
             let company_job_links = driver
                 .find_all(By::ClassName(selectors::COMPANY_JOB_CLASS))
@@ -149,13 +147,6 @@ pub async fn scrape_company_data(company_url: &str) -> Result<(CompanyData, bool
             }
             company_data.company_job_links = job_links.clone();
 
-            let mut job_data_list: Vec<JobData> = Vec::new();
-            let new_job_links = job_links.clone();
-            for job_link in new_job_links.iter() {
-                let (job_data, _) = scrape_job_data(job_link).await?;
-                job_data_list.push(job_data);
-            }
-            company_data.job_data = job_data_list;
 
             let company_tags_elements: Vec<WebElement> = driver
                 .find_all(By::ClassName(selectors::COMPANY_TAGS_CLASS))
@@ -189,7 +180,16 @@ pub async fn scrape_company_data(company_url: &str) -> Result<(CompanyData, bool
                     }
                 }
             }
-
+            let (founders_data, _) = scrape_founders_data(company_url).await?;
+            println!("{:?}", founders_data);
+            let mut job_data_list: Vec<JobData> = Vec::new();
+            let new_job_links = job_links.clone();
+            for job_link in new_job_links.iter() {
+                let (job_data, _) = scrape_job_data(job_link).await?;
+                job_data_list.push(job_data);
+            }
+            company_data.job_data = job_data_list;
+            company_data.company_founders = founders_data;
             company_data.company_social_links = social_links;
             info!("Successfully scraped company details from: {}", company_url);
             driver.quit().await?;
