@@ -147,7 +147,6 @@ pub async fn scrape_company_data(company_url: &str) -> Result<(CompanyData, bool
             }
             company_data.company_job_links = job_links.clone();
 
-
             let company_tags_elements: Vec<WebElement> = driver
                 .find_all(By::ClassName(selectors::COMPANY_TAGS_CLASS))
                 .await?;
@@ -234,20 +233,13 @@ pub async fn scrape_founders_data(
                 .find_all(By::ClassName(selectors::FOUNDER_LINKEDIN_CLASS))
                 .await?;
             for i in 0..founders_names.len() {
-                let founder_name: String = founders_names[i].text().await?;
-                let founder_image_url: Option<String> = founders_images[i].attr("src").await?;
-                let founder_description: String = founders_descriptions[i].text().await?;
-                let founder_linkedin_url: Option<String> =
-                    founders_linkedins[i].attr("href").await?;
-
                 let founder_data: FounderData = FounderData {
-                    founder_name,
-                    founder_image_url,
-                    founder_description,
-                    founder_linkedin_url,
+                    founder_name: founders_names[i].text().await?,
+                    founder_image_url: founders_images[i].attr("src").await?,
+                    founder_description: founders_descriptions[i].text().await?,
+                    founder_linkedin_url: founders_linkedins[i].attr("href").await?,
                     founder_emails: None,
                 };
-
                 founders_list.push(founder_data);
             }
 

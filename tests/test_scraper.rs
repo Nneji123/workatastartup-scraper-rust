@@ -41,7 +41,7 @@ mod test_scraper {
     async fn test_login_successful() {
         let dets: config::Config = config::Config::from_env();
         let username: &str = dets.login_username.as_str();
-        let password: &str  = dets.login_password.as_str();
+        let password: &str = dets.login_password.as_str();
 
         // Ensure that login is successful with valid credentials
         assert!(login(username, password).await.is_ok());
