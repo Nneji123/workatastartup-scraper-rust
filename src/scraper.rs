@@ -124,18 +124,17 @@ pub async fn scrape_company_data(company_url: &str) -> Result<(CompanyData, bool
                     .await?
                     .text()
                     .await?;
-            company_data.company_description =
-                find_element_by_class(driver.clone(), selectors::COMPANY_DESCRIPTION_CLASS_ONE)
-                    .await?
-                    .text()
-                    .await
-                    .or(find_element_by_class(
-                        driver.clone(),
-                        selectors::COMPANY_DESCRIPTION_CLASS_TWO,
-                    )
+            company_data.company_description = driver
+                .find(By::ClassName(selectors::COMPANY_DESCRIPTION_CLASS_ONE))
+                .await?
+                .text()
+                .await
+                .or(driver
+                    .find(By::ClassName(selectors::COMPANY_DESCRIPTION_CLASS_TWO))
                     .await?
                     .text()
                     .await)?;
+
             let mut job_links = Vec::new();
             let company_job_links = driver
                 .find_all(By::ClassName(selectors::COMPANY_JOB_CLASS))

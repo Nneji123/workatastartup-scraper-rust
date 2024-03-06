@@ -9,6 +9,8 @@ use log::info;
 #[tokio::main]
 async fn main() {
     // Create a new instance of Scraper
+    env_logger::init();
+
     let dets: config::Config = config::Config::from_env();
     let username: String = dets.login_username;
     let password: String = dets.login_password;
