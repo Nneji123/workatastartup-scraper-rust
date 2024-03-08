@@ -7,6 +7,8 @@ use std::env;
 pub struct Config {
     pub login_username: String,
     pub login_password: String,
+    pub redis_url: String,
+    pub database_url: String,
 }
 
 /// Function to load environment variables into the struct
@@ -18,10 +20,15 @@ impl Config {
             env::var("LOGIN_USERNAME").expect("LOGIN_USERNAME must be set in .env file");
         let login_password =
             env::var("LOGIN_PASSWORD").expect("LOGIN_PASSWORD must be set in .env file");
+        let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set in .env file");
+
+        let redis_url = env::var("REDIS_URL").expect("REDIS_URL must be set in .env file");
 
         Config {
             login_username,
             login_password,
+            database_url,
+            redis_url,
         }
     }
 }

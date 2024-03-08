@@ -1,6 +1,6 @@
 mod test_models {
     use serde_json;
-    use workatastartup_scraper::models::{CompanyData, FounderData, JobData, ScrapedData};
+    use workscraper_lib::models::{CompanyData, FounderData, JobData, ScrapedData};
 
     #[test]
     fn test_serde_founders() {

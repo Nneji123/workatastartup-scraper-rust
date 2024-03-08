@@ -4,6 +4,9 @@
         "./Cargo.toml",
         "./Cargo.toml",
         "./Cargo.toml",
-        "./Cargo.toml"
+        "./Cargo.toml",
+        ".\\workscraper_api\\Cargo.toml",
+        ".\\workscraper_api\\Cargo.toml",
+        ".\\workscraper_api\\Cargo.toml"
     ]
 }

@@ -28,9 +28,9 @@ pub async fn find_elements_by_class(
 
 pub async fn create_chrome_driver(port: i32) -> WebDriverResult<WebDriver> {
     let chromedriver_cmd: &str = if std::env::consts::OS == "windows" {
-        "./chromedriver.exe"
+        "../chromedriver.exe"
     } else {
-        "./chromedriver"
+        "../chromedriver"
     };
 
     let _chromedriver_url: std::process::Child = Command::new(chromedriver_cmd)

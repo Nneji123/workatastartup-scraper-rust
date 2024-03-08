@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod test_utils {
-    use workatastartup_scraper::utils::{strip_html_tags, validate_company_url, validate_job_url};
+    use workscraper_lib::utils::{strip_html_tags, validate_company_url, validate_job_url};
 
     #[test]
     fn test_valid_job_url() {

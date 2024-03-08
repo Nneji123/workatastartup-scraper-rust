@@ -1,8 +1,8 @@
 #[cfg(test)]
 mod test_scraper {
     use thirtyfour::prelude::*;
-    use workatastartup_scraper::config;
-    use workatastartup_scraper::scraper::{
+    use workscraper_lib::config;
+    use workscraper_lib::scraper::{
         create_chrome_driver, find_elements_by_class, login, scrape_company_data,
         scrape_founders_data, scrape_job_data,
     };

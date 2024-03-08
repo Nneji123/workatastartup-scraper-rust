@@ -1,5 +1,5 @@
 mod test_config {
-    use workatastartup_scraper::config::Config;
+    use workscraper_lib::config::Config;
 
     #[test]
     fn test_from_env() {

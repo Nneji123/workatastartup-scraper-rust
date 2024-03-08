@@ -1,0 +1,23 @@
+[package]
+name = "workscraper_api"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+workscraper_lib = { path = "../workscraper_lib" }
+chrono = "0.4.35"
+actix-web = "4"
+apistos = "0.1"
+regex = "1.10.3"
+serde = { version = "1.0.197", features=["derive"] }
+serde_json = "1.0.114"
+env_logger = "0.11.3"
+futures = "0.3"
+num-traits = "0.2"
+rust_decimal = "1"
+schemars = { package = "apistos-schemars", version = "0.8", features = ["chrono", "uuid1", "url", "rust_decimal"] }
+serde_qs = { version = "0.12", features = ["actix4"] }
+uuid = { version = "1", features = ["serde", "v4"] }
+url = { version = "2", features = ["serde"] }
