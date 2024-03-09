@@ -1,48 +1,25 @@
-use crate::api::add_todo;
-use actix_web::middleware::Logger;
-use actix_web::{App, HttpServer};
-use apistos::app::OpenApiWrapper;
-use apistos::info::Info;
-use apistos::server::Server;
-use apistos::spec::Spec;
-use apistos::web::{get, post, resource, scope};
-use std::error::Error;
-use std::net::Ipv4Addr;
+use poem::{listener::TcpListener, Route, Server};
+use poem_openapi::{payload::PlainText, OpenApi, OpenApiService};
 
-pub mod api;
-pub mod database;
+struct Api;
 
-#[actix_web::main]
-async fn main() -> Result<(), impl Error> {
-    HttpServer::new(move || {
-    let spec = Spec {
-      info: Info {
-        title: "A well documented API".to_string(),
-        description: Some(
-          "This is an API documented using Apistos,\na wonderful new tool to document your actix API !".to_string(),
-        ),
-        ..Default::default()
-      },
-      servers: vec![Server {
-        url: "/api/v3".to_string(),
-        ..Default::default()
-      }],
-      ..Default::default()
-    };
+#[OpenApi]
+impl Api {
+    /// Hello world
+    #[oai(path = "/", method = "get")]
+    async fn index(&self) -> PlainText<&'static str> {
+        PlainText("Hello World")
+    }
+}
 
-    App::new()
-      .document(spec)
-      .wrap(Logger::default())
-      .service(
-        scope("/test").service(
-          scope("/todo")
-            // .service(resource("/{todo_id}").route(get().to(get_todo)))
-            .service(resource("").route(post().to(add_todo))),
-        ),
-      )
-      .build("/openapi.json")
-  })
-  .bind((Ipv4Addr::UNSPECIFIED, 8000))?
-  .run()
-  .await
+#[tokio::main]
+async fn main() {
+    let api_service =
+        OpenApiService::new(Api, "Hello World", "1.0").server("http://localhost:8000");
+    let ui = api_service.swagger_ui();
+    let redoc = api_service.redoc();
+    let app = Route::new().nest("/", api_service).nest("/docs", ui).nest("/redoc", redoc);
+    let _ = Server::new(TcpListener::bind("0.0.0.0:8000"))
+        .run(app)
+        .await;
 }

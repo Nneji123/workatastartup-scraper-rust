@@ -1,16 +1,44 @@
 version: '3.8'
 
 services:
-  rust_poem_server:
+  rust_server:
     build:
       context: .
       dockerfile: Dockerfile
+    command: cargo run
     ports:
       - "8000:8000"
     depends_on:
       - mongodb
       - rabbitmq
       - redis
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/openapi.json"]
+      interval: 5m
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    volumes:
+      - ./:./app
+
+  caddy:
+    container_name: caddy
+    restart: unless-stopped
+    build:
+      context: ./caddy
+      dockerfile: ./Dockerfile
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./data/caddy_data:/data
+      - ./data/caddy_config:/config
+    depends_on:
+      - rust_server
+    environment:
+      PROXY_BACKEND: rust_server
+      PROXY_PORT: 8000
+      DOMAIN: ${DOMAIN}
 
   mongodb:
     image: mongo:latest
@@ -41,3 +69,5 @@ services:
 
 volumes:
   mongodb_data:
+  caddy_data:
+  caddy_config:

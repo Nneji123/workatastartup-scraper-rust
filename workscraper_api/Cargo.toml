@@ -3,27 +3,35 @@ name = "workscraper_api"
 version = "0.1.0"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
 workscraper_lib = { path = "../workscraper_lib" }
-chrono = "0.4.35"
-actix-web = "4"
-apistos = "0.1"
-regex = "1.10.3"
-serde = { version = "1.0.197", features=["derive"] }
-serde_json = "1.0.114"
-env_logger = "0.11.3"
-futures = "0.3"
-num-traits = "0.2"
-rust_decimal = "1"
-schemars = { package = "apistos-schemars", version = "0.8", features = ["chrono", "uuid1", "url", "rust_decimal"] }
-serde_qs = { version = "0.12", features = ["actix4"] }
-uuid = { version = "1", features = ["serde", "v4"] }
-url = { version = "2", features = ["serde"] }
-mongodb = "2.0"
-bson = "2.9.0"
-tokio = "1.36.0"
+poem = { version = "2.0.1", default-features = false }
+poem-derive = { version = "2.0.1" }
+poem-openapi = { version = "4.0.1", default-features = false, features = ["swagger-ui", "uuid", "chrono", "time", "redoc"] }
+poem-openapi-derive = { version = "4.0.1" }
+poem-grpc-build = { version = "0.3.0" }
+proc-macro-crate = "3.0.0"
+proc-macro2 = "1.0.29"
+quote = "1.0.9"
+syn = { version = "2.0" }
+tokio = "1.17.0"
+serde_json = "1.0.68"
+serde = { version = "1.0.130", features = ["derive"] }
+thiserror = "1.0.30"
+regex = "1.5.5"
+mime = "0.3.16"
+tracing = "0.1.36"
+chrono = { version = "0.4.31", default-features = false }
+bytes = "1.1.0"
+futures-util = "0.3.17"
+tokio-stream = "0.1.8"
+serde_yaml = "0.9"
+quick-xml = { version = "0.31.0", features = ["serialize"] }
+base64 = "0.22.0"
+serde_urlencoded = "0.7.1"
+indexmap = "2.0.0"
+reqwest = { version = "0.11.23", default-features = false }
+mongodb = "2.8.1"
 
 [dev-dependencies]
 cargo-nextest = "0.9.68-b.2"

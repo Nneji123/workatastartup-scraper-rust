@@ -19,8 +19,8 @@ RUN chmod u+x install_chrome.sh && \
 COPY . /app
 
 RUN rustup component add rustfmt && \
-    rustup component add clippy
+    rustup component add clippy 
 
-# Commands for docker run
-CMD make clean && \
-    make run
+# Commands for docker run, later change cargo build to make ready(to run tests before building image)
+RUN make clean && \
+    cargo build 

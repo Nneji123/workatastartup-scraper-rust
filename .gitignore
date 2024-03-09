@@ -5,3 +5,4 @@ chromedriver
 chromedriver.exe
 chromedriver-win64.zip
 test.sh
+/data

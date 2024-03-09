@@ -1,6 +1,16 @@
 [workspace]
-
+resolver = "2"
 members = [
     "workscraper_lib",
     "workscraper_api"
 ]
+
+[workspace.package]
+authors = ["Ifeanyi Nneji <ifeanyinneji777@gmail.com>"]
+edition = "2021"
+license = "MIT OR Apache-2.0"
+# documentation = "https://docs.rs/poem/"
+# homepage = "https://github.com/poem-web/poem"
+# repository = "https://github.com/poem-web/poem"
+rust-version = "1.74"
+

@@ -7,6 +7,12 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CARGO_TERM_COLOR: always
+    services:
+      mongodb:
+        image: mongo
+        ports:
+          - 27017:27017
+        options: --health-cmd="mongo --eval 'db.stats().ok'
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust
@@ -21,7 +27,7 @@ jobs:
       - name: Create .env file
         run: echo "${{ secrets.TEST_VARIABLES }}" > .env
       - name: Generate code coverage
-        run: cargo llvm-cov --all-features --workspace --lcov --output-path lcov.info
+        run: cargo llvm-cov nextest --all-features --workspace --lcov --output-path lcov.info
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4.0.1
         with:

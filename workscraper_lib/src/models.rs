@@ -2,7 +2,7 @@
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub struct FounderData {
     pub founder_name: String,
     pub founder_description: String,
@@ -11,7 +11,7 @@ pub struct FounderData {
     pub founder_emails: Option<Vec<String>>,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub struct JobData {
     pub job_url: String,
     pub job_title: String,
@@ -38,7 +38,7 @@ impl JobData {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub struct CompanyData {
     pub company_name: String,
     pub company_url: String,

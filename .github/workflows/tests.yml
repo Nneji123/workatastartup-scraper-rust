@@ -7,6 +7,12 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CARGO_TERM_COLOR: always
+    services:
+      mongodb:
+        image: mongo
+        ports:
+          - 27017:27017
+        options: --health-cmd="mongo --eval 'db.stats().ok'
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust
@@ -16,8 +22,10 @@ jobs:
             chmod u+x ./scripts/install_chrome.sh
             ./scripts/install_chrome.sh
       - name: Install dependencies
-        run: cargo build
+        run: |
+            cargo build
+            cargo install cargo-nextest --locked
       - name: Create .env file
         run: echo "${{ secrets.TEST_VARIABLES }}" > .env
       - name: Run tests
-        run: cargo test
+        run: cargo nextest run
