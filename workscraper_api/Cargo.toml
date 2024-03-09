@@ -21,3 +21,9 @@ schemars = { package = "apistos-schemars", version = "0.8", features = ["chrono"
 serde_qs = { version = "0.12", features = ["actix4"] }
 uuid = { version = "1", features = ["serde", "v4"] }
 url = { version = "2", features = ["serde"] }
+mongodb = "2.0"
+bson = "2.9.0"
+tokio = "1.36.0"
+
+[dev-dependencies]
+cargo-nextest = "0.9.68-b.2"

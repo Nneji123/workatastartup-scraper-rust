@@ -9,7 +9,8 @@ use apistos::web::{get, post, resource, scope};
 use std::error::Error;
 use std::net::Ipv4Addr;
 
-mod api;
+pub mod api;
+pub mod database;
 
 #[actix_web::main]
 async fn main() -> Result<(), impl Error> {
@@ -41,7 +42,7 @@ async fn main() -> Result<(), impl Error> {
       )
       .build("/openapi.json")
   })
-  .bind((Ipv4Addr::UNSPECIFIED, 8080))?
+  .bind((Ipv4Addr::UNSPECIFIED, 8000))?
   .run()
   .await
 }
